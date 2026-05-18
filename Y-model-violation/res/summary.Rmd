@@ -37,7 +37,7 @@ i=1
 
     kable(res1, format = "html", booktabs = TRUE) %>%
       kable_styling(full_width = FALSE) %>%
-      add_header_above(c("-"=4,"ITSA" = 5, "Naive" = 5)) %>%
+      add_header_above(c("-"=4,"ANDI" = 5, "Naive" = 5)) %>%
       column_spec(1, width = "5em") %>%
       column_spec(2, width = "8em")%>%print
     
@@ -47,7 +47,7 @@ i=1
     
     kable(res2, format = "html", booktabs = TRUE) %>%
       kable_styling(full_width = FALSE) %>%
-      add_header_above(c("-"=3,"Naive" = 5, "ITSA" = 5)) %>%
+      add_header_above(c("-"=3,"ANDI" = 5, "Naive" = 5)) %>%
       column_spec(1, width = "5em") %>%
       column_spec(2, width = "8em")%>%print
     
@@ -69,7 +69,7 @@ i=2
   
     kable(res1, format = "html", booktabs = TRUE) %>%
       kable_styling(full_width = FALSE) %>%
-      add_header_above(c("-"=4,"ITSA" = 5, "Naive" = 5)) %>%
+      add_header_above(c("-"=4,"ANDI" = 5, "Naive" = 5)) %>%
       column_spec(1, width = "5em") %>%
       column_spec(2, width = "8em")%>%print
     
@@ -79,7 +79,7 @@ i=2
     
     kable(res2, format = "html", booktabs = TRUE) %>%
       kable_styling(full_width = FALSE) %>%
-      add_header_above(c("-"=3,"Naive" = 5, "ITSA" = 5)) %>%
+      add_header_above(c("-"=3,"ANDI" = 5, "Naive" = 5)) %>%
       column_spec(1, width = "5em") %>%
       column_spec(2, width = "8em")%>%print
     

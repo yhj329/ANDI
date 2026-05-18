@@ -26,18 +26,7 @@ library(kableExtra)
 load(file = "summary_navie_ci_ns500_DM.rdata")
 source(file = "evalua.R")
 
-# i=4
-#  library(xtable)
-# eval_tab=evalua(res = reslist[[i]], beta_t = betat)[[1]][,-c(9:20,25)]
-# eval_tab[c(7,12)]=eval_tab[c(7,12)]*100
-# print(xtable(eval_tab,digits=3),type = "latex",sanitize.text.function = identity,include.rownames = F)
 
-
-# 
-# 
-# print(xtable(evalua(res = reslist[[4]], beta_t = betat)[[1]][,-c(9:20,25)],digits=3),type = "latex",sanitize.text.function = identity,include.rownames = F)
-# 
-# print(xtable(evalua(res = reslist[[4]], beta_t = betat)[[2]],digits=3),type = "latex",sanitize.text.function = identity,include.rownames = F)
 ```
 
 
@@ -57,7 +46,7 @@ print(rho_list_diffz[[i]])
     # 18
     kable(res1, format = "html", booktabs = TRUE) %>%
       kable_styling(full_width = FALSE) %>%
-      add_header_above(c("-"=3,"ITSA" = 5, "Naive" = 5)) %>%
+      add_header_above(c("-"=3,"ANDI" = 5, "Naive" = 5)) %>%
       column_spec(1, width = "5em") %>%
       column_spec(2, width = "8em")%>%print
     
@@ -67,7 +56,7 @@ print(rho_list_diffz[[i]])
     
     kable(res2, format = "html", booktabs = TRUE) %>%
       kable_styling(full_width = FALSE) %>%
-      add_header_above(c("-"=3,"ITSA" = 5, "Naive" = 5)) %>%
+      add_header_above(c("-"=3,"ANDI" = 5, "Naive" = 5)) %>%
       column_spec(1, width = "5em") %>%
       column_spec(2, width = "8em")%>%print
     
@@ -94,7 +83,7 @@ print(rho_list_diffz[[i]])
 
     kable(res1, format = "html", booktabs = TRUE) %>%
       kable_styling(full_width = FALSE) %>%
-      add_header_above(c("-"=3,"ITSA" = 5, "Naive" = 5)) %>%
+      add_header_above(c("-"=3,"ANDI" = 5, "Naive" = 5)) %>%
       column_spec(1, width = "5em") %>%
       column_spec(2, width = "8em")%>%print
     
@@ -104,7 +93,7 @@ print(rho_list_diffz[[i]])
     
     kable(res2, format = "html", booktabs = TRUE) %>%
       kable_styling(full_width = FALSE) %>%
-      add_header_above(c("-"=3,"ITSA" = 5, "Naive" = 5)) %>%
+      add_header_above(c("-"=3,"ANDI" = 5, "Naive" = 5)) %>%
       column_spec(1, width = "5em") %>%
       column_spec(2, width = "8em")%>%print
     
@@ -129,7 +118,7 @@ print(rho_list_diffz[[i]])
 
     kable(res1, format = "html", booktabs = TRUE) %>%
       kable_styling(full_width = FALSE) %>%
-      add_header_above(c("-"=3,"ITSA" = 5, "Naive" = 5)) %>%
+      add_header_above(c("-"=3,"ANDI" = 5, "Naive" = 5)) %>%
       column_spec(1, width = "5em") %>%
       column_spec(2, width = "8em")%>%print
     
@@ -139,7 +128,7 @@ print(rho_list_diffz[[i]])
     
     kable(res2, format = "html", booktabs = TRUE) %>%
       kable_styling(full_width = FALSE) %>%
-      add_header_above(c("-"=3,"ITSA" = 5, "Naive" = 5)) %>%
+      add_header_above(c("-"=3,"ANDI" = 5, "Naive" = 5)) %>%
       column_spec(1, width = "5em") %>%
       column_spec(2, width = "8em")%>%print
     
@@ -168,7 +157,7 @@ print(rho_list_diffz[[i]])
 
     kable(res1, format = "html", booktabs = TRUE) %>%
       kable_styling(full_width = FALSE) %>%
-      add_header_above(c("-"=3,"ITSA" = 5, "Naive" = 5)) %>%
+      add_header_above(c("-"=3,"ANDI" = 5, "Naive" = 5)) %>%
       column_spec(1, width = "5em") %>%
       column_spec(2, width = "8em")%>%print
     
@@ -178,7 +167,7 @@ print(rho_list_diffz[[i]])
     
     kable(res2, format = "html", booktabs = TRUE) %>%
       kable_styling(full_width = FALSE) %>%
-      add_header_above(c("-"=3,"ITSA" = 5, "Naive" = 5)) %>%
+      add_header_above(c("-"=3,"ANDI" = 5, "Naive" = 5)) %>%
       column_spec(1, width = "5em") %>%
       column_spec(2, width = "8em")%>%print
     
