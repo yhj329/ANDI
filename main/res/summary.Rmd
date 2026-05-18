@@ -1,0 +1,219 @@
+---
+title: "summary"
+author: "Jia Yuhan"
+output: 
+  html_document:
+    css: styles.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r ,fig.width=12, fig.height=7,echo=F}
+
+library(kableExtra)
+```
+
+
+# 500
+
+```{r ,fig.width=12, fig.height=7,echo=F}
+
+load(file = "summary_navie_ci_ns500.rdata")
+
+source(file = "evalua.R")
+
+# library(xtable)
+# print(xtable(evalua(res = reslist[[i]], beta_t = betat)[[1]][,-c(9:20,25)],digits=3),type = "latex",sanitize.text.function = identity,include.rownames = F)
+# 
+# 
+# print(xtable(evalua(res = reslist[[5]], beta_t = betat)[[1]][,-c(9:20,25)],digits=3),type = "latex",sanitize.text.function = identity,include.rownames = F)
+# 
+# print(xtable(evalua(res = reslist[[5]], beta_t = betat)[[2]],digits=3),type = "latex",sanitize.text.function = identity,include.rownames = F)
+```
+
+## C1
+```{r,results='asis',echo=F }
+
+i=1 
+
+
+print(rho_list_diffz[[i]])
+    
+
+    res1 <- evalua(res = reslist[[i]], beta_t = betat)[[1]][,-c(9:20,25)]
+    
+    kable(res1, format = "html", booktabs = TRUE) %>%
+      kable_styling(full_width = FALSE) %>%
+      add_header_above(c("-"=3,"ITSA" = 5, "Naive" = 5)) %>%
+      column_spec(1, width = "5em") %>%
+      column_spec(2, width = "8em")%>%print
+    
+    cat("\n")
+    
+    res2 <- evalua(res =reslist[[i]], beta_t = betat)[[2]]
+    
+    kable(res2, format = "html", booktabs = TRUE) %>%
+      kable_styling(full_width = FALSE) %>%
+      add_header_above(c("-"=3,"Naive" = 5, "ITSA" = 5)) %>%
+      column_spec(1, width = "5em") %>%
+      column_spec(2, width = "8em")%>%print
+    
+
+    cat("\n")
+   
+
+
+
+```
+
+
+## C2
+```{r,results='asis' ,echo=F}
+
+
+i=2 
+
+
+print(rho_list_diffz[[i]])
+    
+
+    res1 <- evalua(res = reslist[[i]], beta_t = betat)[[1]][,-c(9:20,25)]
+    
+
+    kable(res1, format = "html", booktabs = TRUE) %>%
+      kable_styling(full_width = FALSE) %>%
+      add_header_above(c("-"=3,"ITSA" = 5, "Naive" = 5)) %>%
+      column_spec(1, width = "5em") %>%
+      column_spec(2, width = "8em")%>%print
+    
+    cat("\n")
+    
+    res2 <- evalua(res =reslist[[i]], beta_t = betat)[[2]]
+    
+    kable(res2, format = "html", booktabs = TRUE) %>%
+      kable_styling(full_width = FALSE) %>%
+      add_header_above(c("-"=3,"Naive" = 5, "ITSA" = 5)) %>%
+      column_spec(1, width = "5em") %>%
+      column_spec(2, width = "8em")%>%print
+    
+
+    cat("\n")
+   
+
+
+
+```
+
+## C3
+```{r,results='asis' ,echo=F}
+
+
+i=3 
+
+
+print(rho_list_diffz[[i]])
+    
+
+    res1 <- evalua(res = reslist[[i]], beta_t = betat)[[1]][,-c(9:20,25)]
+    
+
+    kable(res1, format = "html", booktabs = TRUE) %>%
+      kable_styling(full_width = FALSE) %>%
+      add_header_above(c("-"=3,"ITSA" = 5, "Naive" = 5)) %>%
+      column_spec(1, width = "5em") %>%
+      column_spec(2, width = "8em")%>%print
+    
+    cat("\n")
+    
+    res2 <- evalua(res =reslist[[i]], beta_t = betat)[[2]]
+    
+    kable(res2, format = "html", booktabs = TRUE) %>%
+      kable_styling(full_width = FALSE) %>%
+      add_header_above(c("-"=3,"Naive" = 5, "ITSA" = 5)) %>%
+      column_spec(1, width = "5em") %>%
+      column_spec(2, width = "8em")%>%print
+    
+
+    cat("\n")
+
+
+```
+
+## C4a beta all different betaz -30%
+```{r,results='asis' ,echo=F}
+
+i=4 
+
+
+print(rho_list_diffz[[i]])
+    
+
+    res1 <- evalua(res = reslist[[i]], beta_t = betat)[[1]][,-c(9:20,25)]
+    
+   
+    kable(res1, format = "html", booktabs = TRUE) %>%
+      kable_styling(full_width = FALSE) %>%
+      add_header_above(c("-"=3,"ITSA" = 5, "Naive" = 5)) %>%
+      column_spec(1, width = "5em") %>%
+      column_spec(2, width = "8em")%>%print
+    
+    cat("\n")
+    
+    res2 <- evalua(res =reslist[[i]], beta_t = betat)[[2]]
+    
+    kable(res2, format = "html", booktabs = TRUE) %>%
+      kable_styling(full_width = FALSE) %>%
+      add_header_above(c("-"=3,"Naive" = 5, "ITSA" = 5)) %>%
+      column_spec(1, width = "5em") %>%
+      column_spec(2, width = "8em")%>%print
+    
+
+    cat("\n")
+   
+
+
+```
+
+
+
+
+## C4b beta all different betaz +30%
+```{r,results='asis' ,echo=F}
+
+i=5 
+
+print(rho_list_diffz[[i]])
+    
+
+    res1 <- evalua(res = reslist[[i]], beta_t = betat)[[1]][,-c(9:20,25)]
+
+    kable(res1, format = "html", booktabs = TRUE) %>%
+      kable_styling(full_width = FALSE) %>%
+      add_header_above(c("-"=3,"ITSA" = 5, "Naive" = 5)) %>%
+      column_spec(1, width = "5em") %>%
+      column_spec(2, width = "8em")%>%print
+    
+    cat("\n")
+    
+    res2 <- evalua(res =reslist[[i]], beta_t = betat)[[2]]
+    
+    kable(res2, format = "html", booktabs = TRUE) %>%
+      kable_styling(full_width = FALSE) %>%
+      add_header_above(c("-"=3,"Naive" = 5, "ITSA" = 5)) %>%
+      column_spec(1, width = "5em") %>%
+      column_spec(2, width = "8em")%>%print
+    
+
+    cat("\n")
+   
+
+
+
+```
+
+
+

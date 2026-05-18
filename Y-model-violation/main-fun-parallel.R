@@ -2,7 +2,7 @@
 library(parallel)
 library(doParallel)
 
-main_simu2_parallel<-function(nco,N=100,nt,ns,betat,betas,xi,
+main_simu2_parallel<-function(nco,N=100,nt,ns,yparameter_s,yparameter_t,xi,
                      zparameter){
   Sys.setenv(OMP_NUM_THREADS=1)
   Sys.setenv(MKL_NUM_THREADS=1)
@@ -11,7 +11,8 @@ main_simu2_parallel<-function(nco,N=100,nt,ns,betat,betas,xi,
   
   set.seed(123)
   
-  data<-replicate(N, data.gen2(ns=ns,nt=nt,xi=xi,betas=betas,betat=betat,zparameter = zparameter), 
+  data<-replicate(N, data.gen2(ns=ns,nt=nt,xi=xi,yparameter_s = yparameter_s,
+                               yparameter_t=yparameter_t,zparameter = zparameter), 
                   simplify = FALSE)
   
   p=ncol(data[[1]]$xs)+1
@@ -25,7 +26,7 @@ main_simu2_parallel<-function(nco,N=100,nt,ns,betat,betas,xi,
   registerDoParallel(cl)
   
   # Export objects required by worker processes.
-
+  
   clusterExport(cl, 
                 varlist = c("data", "p", "q", "hb", "ns", "nt"),
                 envir = environment())
@@ -53,13 +54,13 @@ main_simu2_parallel<-function(nco,N=100,nt,ns,betat,betas,xi,
     sourceCpp("cpp/der.cpp")
     
     sourceCpp("cpp/weighted_sum.cpp")
-
+    
     
     NULL
   })
   
   
-
+  
   
   #-----------------main------
   results <- foreach(i = 1:N) %dopar% {
@@ -182,9 +183,9 @@ main_simu2_parallel<-function(nco,N=100,nt,ns,betat,betas,xi,
     res_auc_naive_B500=a1[[2]]
     res_auc_naive_B1000=a1[[3]]
     
-
+    
     gc()
-
+    
     
     #-----------result-------
     out <- list(
@@ -270,9 +271,9 @@ main_simu2_parallel<-function(nco,N=100,nt,ns,betat,betas,xi,
     res_auc_naive_B1000_qu = res_auc_naive_B1000_qu,
     
     param_list=list(nt=nt,ns=ns,betat=betat,betas=betas,xi=xi,
-    zparameter=zparameter)
+                    zparameter=zparameter)
   ))
 }
- 
+
 
 

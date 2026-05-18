@@ -2,23 +2,33 @@ library(pracma)
 library(sandwich)
 library(nloptr)
 library(pROC)
-
 library(withr)
 library(MASS)
 
 
 
-
-
-#------------data generation---------------------
-
 data.gen2 <- function(ns, nt, 
-                      betas, betat, 
+                      yparameter_s,yparameter_t,
                       mu_xt=rep(0,3), sigma_xt=0.5^ abs(outer(1:3, 1:3, "-")), xi, 
                       zparameter,threshold_p=0) {
   
   p1 <- length(mu_xt)
+  expit <- function(u) 1 / (1 + exp(-u))
   
+  # -------------------
+  # Helper: linear predictor for Y | X, Z
+  # -------------------
+  eta_y_fun <- function(x, z, yparameter) {
+    beta <- yparameter$beta
+    eta <- drop(cbind(1, x, z) %*% beta)
+    
+    if (isTRUE(yparameter$include_xz_interaction)) {
+      gamma_xz <- yparameter$gamma_xz
+      eta <- eta + drop((x * drop(z)) %*% gamma_xz)
+    }
+    
+    return(eta)
+  }
   # -------------------
   # Target: generate (X_{-p}, latent X_p) together
   # -------------------
@@ -30,14 +40,17 @@ data.gen2 <- function(ns, nt,
   # Z | X
   beta_z <- zparameter$beta
   sigma_z <- zparameter$sigma_z
-  
   zt <- cbind(1, xt) %*% beta_z[1:(p1+1)] + rnorm(nt,0,sigma_z)
   
   
-  # Y | X, Z
-  prob_yt <- 1/(1+exp(-cbind(1, xt, zt) %*% betat))
-  yt <- rbinom(nt,1,prob_yt)
-  
+
+  # -------------------
+  # Target: Y | X, Z
+  # -------------------
+  eta_yt <- eta_y_fun(xt, zt, yparameter_t)
+  prob_yt <- expit(eta_yt)
+  yt <- rbinom(nt, 1, prob_yt)
+
   # -------------------
   # Source: tilting for X
   # -------------------
@@ -80,12 +93,12 @@ data.gen2 <- function(ns, nt,
   # Z | X 
   zs <- cbind(1, xs) %*% beta_z[1:(p1+1)] + rnorm(ns,0,sigma_z)
   
-  
-  # Y | X, Z 
-  prob_ys <- 1/(1+exp(-cbind(1, xs, zs) %*% betas))
-  ys <- rbinom(nrow(xs),1,prob_ys)
-  
-  
+  # -------------------
+  # Source: Y | X, Z
+  # -------------------
+  eta_ys <- eta_y_fun(xs, zs, yparameter_s)
+  prob_ys <- expit(eta_ys)
+  ys <- rbinom(ns, 1, prob_ys)
   #-----------------summary-----------
   yt_xt_model <- glm(yt ~ xt, family = binomial)
   
@@ -98,13 +111,16 @@ data.gen2 <- function(ns, nt,
   IF_psi=(cbind(1,xt)*(yt-pred_p)) %*% t(solve(A_ma))
   var_nu=cov(cbind(1,xt,IF_psi))/nrow(xt)
   
-  
+
   #-----------results-------------
   return(list(xs=xs,zs=zs,ys=ys,mut=colMeans(cbind(1,xt)),
               psi=coef(yt_xt_model) ,var_nu=var_nu,signal_zs=sigma_z^2/var(zs),signal_zt=sigma_z^2/var(zt)))
   
-  
 }
+
+
+
+
 
 
 
@@ -210,22 +226,22 @@ est_f_no_sum<-function(data,alpha,nu){
 fast_weighted_sum <- function(s, w1, w0) {
   n <- length(s)
   
-
+  
   order_idx <- order(s)  
   
-
+  
   s_sorted <- s[order_idx]
   w1_sorted <- w1[order_idx]
   w0_sorted <- w0[order_idx]
   
-
+  
   w0_prefix_sum <- c(0, cumsum(w0_sorted))  
   
-
+  
   result <- 0
   i <- 1
   while (i <= n) {
-
+    
     j <- i
     while (j <= n && s_sorted[j] == s_sorted[i]) j <- j + 1
     j <- j - 1  
@@ -262,7 +278,7 @@ auc_prob<-function(XI,beta_true,beta_model,data){
   pi0=weight*(1-y_p)
   
   sum_auc<-fast_weighted_sum(s =score,w1 = pi1,w0 = pi0 )
-
+  
   
   sum_auc=(sum_auc )/(sum(pi1)*sum(pi0)) #/P(Y=1)*P(Y=0) 
   return(sum_auc)
@@ -276,7 +292,7 @@ weighted_sum_kernel <- function(hb,s, w1, w0) {
   
   # Phi matrix
   Phi_mat <- pnorm(diff_mat)
-
+  
   w_mat <- outer(w1, w0, "*")
   
   # AUC = sum_{i,j} w1[i] w0[j] Phi(...)
@@ -341,7 +357,7 @@ IF_kernel_source_xz<-function(auchat,der_AUC_alpha,A_total,alpha,nu,
   
   IF_1=scale( IF_1,center=T,scale=F)
   
-
+  
   IF_2=IF_1-drop(est_f_no_sum(data = data,alpha =alpha ,nu=nu)%*%t(solve(A_total))%*%drop(der_AUC_alpha))
   
   return((IF_2))
@@ -426,11 +442,11 @@ IF_kernel_source_x<-function(auchat,der_AUC_alpha,A_total,alpha,nu,
     auchat*(pi0/pi0_mean+pi1/pi1_mean)
   
   IF_1=scale( IF_1,center=T,scale=F)
-
+  
   IF_2=IF_1-drop(est_f_no_sum(data = data,alpha =alpha ,nu=nu)%*%t(solve(A_total))%*%drop(der_AUC_alpha))#part 3_1
   
   return((IF_2))
-
+  
 }
 # derivative
 der_auc_kernel_x_alpha<-function(auchat,alpha,nu,hb,data){
@@ -547,18 +563,18 @@ boot_auc_matrix_ci <- function(ys,X,Z, Blist=c(100)){
   model_ys_x <- glm(formula = formula_ys_x,
                     data = train_data,
                     family = binomial(link = "logit"))
-
-
+  
+  
   # 模型2：ys ~ X + Z
   model_ys_xz <- glm(formula = formula_ys_xz,
                      data = train_data,
                      family = binomial(link = "logit"))
-
+  
   pred_x <- predict(model_ys_x, type="response")
-
+  
   auc0 <-light_auc(y = ys,score = pred_x)
-    #pROC::roc(ys, pred_x, quiet=TRUE)$auc
-
+  #pROC::roc(ys, pred_x, quiet=TRUE)$auc
+  
   pred_xz <- predict(model_ys_xz, type="response")
   auc1 <- light_auc(y = ys,score = pred_xz)
   #pROC::roc(ys, pred_xz, quiet=TRUE)$auc
@@ -573,46 +589,46 @@ boot_auc_matrix_ci <- function(ys,X,Z, Blist=c(100)){
   
   for(b in 1:Bmax){
     idx <- sample.int(n, replace=TRUE)
-
+    
     # bootstrap sample model
     # 模型1：ys ~ X
-
+    
     model_ys_x_b <- glm(formula = formula_ys_x,
-                      data = train_data[idx,],
-                      family = binomial(link = "logit"))
-
-
+                        data = train_data[idx,],
+                        family = binomial(link = "logit"))
+    
+    
     # 模型2：ys ~ X + Z
     model_ys_xz_b <- glm(formula = formula_ys_xz,
-                       data = train_data[idx,],
-                       family = binomial(link = "logit"))
-
-
-
+                         data = train_data[idx,],
+                         family = binomial(link = "logit"))
+    
+    
+    
     # apparent AUC on bootstrap sample
     pred_x_b_app <- predict(model_ys_x_b, type="response")
     auc0_b_app[b] <- light_auc(y = ys[idx],score = pred_x_b_app)
-      #pROC::roc(ys[idx], pred_x_b_app, quiet=TRUE)$auc
-
+    #pROC::roc(ys[idx], pred_x_b_app, quiet=TRUE)$auc
+    
     pred_xz_b_app <- predict(model_ys_xz_b, type="response")
     auc1_b_app[b] <-  light_auc(y = ys[idx],score = pred_xz_b_app)
-      #pROC::roc(ys[idx], pred_xz_b_app, quiet=TRUE)$auc
-
-
+    #pROC::roc(ys[idx], pred_xz_b_app, quiet=TRUE)$auc
+    
+    
     # test AUC on original data
     pred_x_b_test <- predict(model_ys_x_b, newdata=train_data,type="response")
     auc0_b_test[b] <-  light_auc(y = ys,score = pred_x_b_test)
-      #pROC::roc(ys, pred_x_b_test, quiet=TRUE)$auc
-
+    #pROC::roc(ys, pred_x_b_test, quiet=TRUE)$auc
+    
     pred_xz_b_test <- predict(model_ys_xz_b, newdata=train_data,type="response")
     auc1_b_test[b] <- light_auc(y = ys,score = pred_xz_b_test)
-      #pROC::roc(ys, pred_xz_b_test, quiet=TRUE)$auc
-
+    #pROC::roc(ys, pred_xz_b_test, quiet=TRUE)$auc
+    
   }
   
   #------------------- 储存结果-------------------
   boot_results=list()
-
+  
   for(i in 1:length(Blist)){
     B=Blist[i]
     optimism0 <- mean(auc0_b_app[1:B] - auc0_b_test[1:B])
@@ -623,8 +639,8 @@ boot_auc_matrix_ci <- function(ys,X,Z, Blist=c(100)){
     est_naive=c(auc1_corrected,auc0_corrected,auc1_corrected-auc0_corrected)
     # se
     sd_naive=c(sd(auc1_b_app[1:B]),
-      sd(auc0_b_app[1:B]),
-      sd(auc1_b_app[1:B] - auc0_b_app[1:B]))
+               sd(auc0_b_app[1:B]),
+               sd(auc1_b_app[1:B] - auc0_b_app[1:B]))
     # ql
     ql=c(quantile(auc1_b_app[1:B], probs = 0.025),
          quantile(auc0_b_app[1:B], probs = 0.025),
@@ -633,7 +649,7 @@ boot_auc_matrix_ci <- function(ys,X,Z, Blist=c(100)){
     qu=c(quantile(auc1_b_app[1:B], probs = 0.975),
          quantile(auc0_b_app[1:B], probs = 0.975),
          quantile(auc1_b_app[1:B]-auc0_b_app[1:B], probs = 0.975))-c(optimism1,optimism0,optimism1-optimism0)
-  
+    
     boot_results[[i]]=list(B=B,est=est_naive,sd=sd_naive,ql=ql,qu=qu)
   }
   
